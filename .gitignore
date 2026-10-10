@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.log
+.DS_Store
+.idea/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# ===== 个人学习与计划文档：本地保留，绝不进仓库 =====
+progress/
+详细学习计划.md
+本机环境与算力方案.md
+技术选型备忘.md
+学习计划总览.html
+知识树看板.html
+*.html

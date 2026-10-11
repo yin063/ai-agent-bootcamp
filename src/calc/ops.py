@@ -38,3 +38,17 @@ def divide(a: float, b: float) -> float:
 #   2. average(nums: list[float]) -> float            空列表要抛 ValueError
 # 提示：写完后在 tests/test_ops.py 里加 2 个新测试，pytest 全绿才算完成
 # ---------------------------------------------------------------------------
+
+def power(base: float, exp: float) -> float:
+    result = base**exp
+    logger.info("power(%s, %s) = %s", base, exp, result)
+    return result
+
+
+def average(nums: list[float]) -> float:
+    if not nums:
+        logger.error("average failed: empty list")
+        raise ValueError("average() needs at least one number")
+    result = sum(nums) / len(nums)
+    logger.info("average(%s) = %s", nums, result)
+    return result

@@ -32,3 +32,34 @@ def test_divide_by_zero_raises() -> None:
 #   test_average       -> assert average([1, 2, 3]) == 2.0
 #   test_average_empty -> with pytest.raises(ValueError): average([])
 # ---------------------------------------------------------------------------
+
+
+# --- 上面是旧 TODO，下面是今天的验收标准（导师写的）：把 ops.py 里这两个函数补上 ---
+# 参考黑马 Python 进阶里的函数定义章节，重点是多返回值/异常这两个约定。
+
+try:
+    from src.calc.ops import average, power
+except ImportError:
+    power = average = None  # type: ignore[assignment]
+
+_needs_impl = pytest.mark.skipif(power is None, reason="先实现 ops.power / ops.average")
+
+
+@_needs_impl
+def test_power() -> None:
+    assert power(2, 3) == 8
+    assert power(4, 0.5) == 2.0
+    assert power(2, -1) == 0.5
+
+
+@_needs_impl
+def test_average() -> None:
+    assert average([1, 2, 3]) == 2.0
+    assert average([10]) == 10.0
+    assert average([-1, 1]) == 0.0
+
+
+@_needs_impl
+def test_average_empty_raises() -> None:
+    with pytest.raises(ValueError):
+        average([])

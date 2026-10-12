@@ -28,17 +28,15 @@ class FakeDeviceSession:
 
     def read(self) -> dict[str, object]:
         """模拟读一次数。已关闭的会话应该报错（真实驱动也这样）。"""
-        # TODO(10-12 ③做)：
-        #   1. if self.closed: raise RuntimeError("session already closed")
-        #   2. return {"device_id": self.device_id, "connected": True}
-        raise NotImplementedError("TODO: 实现 read")
+        if self.closed:
+            raise RuntimeError("session already closed")
+        return {"device_id": self.device_id, "connected": True}
 
     def close(self) -> None:
         """关连接。重复调用要安全（幂等），不能抛异常。"""
-        # TODO(10-12 ③做)：
-        #   self.closed = True
-        #   可选：logger.info("session closed: %s", self.device_id)
-        raise NotImplementedError("TODO: 实现 close")
+        # 幂等：关一次和关十次结果一样，重复调用不报错
+        self.closed = True
+        logger.info("session closed: %s", self.device_id)
 
 
 @contextmanager
@@ -47,14 +45,9 @@ def device_session(device_id: str) -> Iterator[FakeDeviceSession]:
 
     关键：close() 必须放在 finally 里，否则抛异常时不执行。
     """
-    # TODO(10-12 ③做)：删掉下面这行，按骨架填
-    #   session = FakeDeviceSession(device_id)
-    #   try:
-    #       yield session
-    #   finally:
-    #       session.close()          # ← 这一行是整个练习的答案
-    #
-    # 看不懂先看：BV1h4411Q7QP P23「with、上下文管理器」19 min
-    #   https://www.bilibili.com/video/BV1h4411Q7QP
-    # 文档：https://docs.python.org/zh-cn/3/library/contextlib.html
-    raise NotImplementedError("TODO: 实现 device_session")
+    session = FakeDeviceSession(device_id)
+    try:
+        yield session  # 停在 with 块内部
+    finally:
+        # 这一行是整个练习的答案：finally 里的代码，抛异常也一定会执行
+        session.close()

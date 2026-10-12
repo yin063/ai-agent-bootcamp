@@ -6,28 +6,25 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+from typing import Literal
 
-# TODO(10-11 ③做)：装依赖
-#   uv add pydantic          （本 shell 找不到 uv 就用 ~/.local/bin/uv.exe add pydantic）
-#
-# 装完把 import 加回来：
-#   from datetime import datetime
-#   from typing import Literal
-#   from pydantic import BaseModel, Field
-#
-# 然后在这里写两个模型：
-#
-# class SensorReading(BaseModel):
-#     device_id: str                       # 设备编号，不能为空，min_length=1
-#     value: float                         # 传感器读数
-#     unit: Literal["celsius", "bar", "rpm"]   # 只允许这三种单位
-#     ts: datetime                         # 采集时间
-#
-# class WorkOrder(BaseModel):
-#     order_id: str
-#     device_id: str
-#     priority: Literal["low", "mid", "high"] = "mid"   # 缺省值
-#     status: Literal["open", "doing", "done"] = "open"
-#
-# 看不懂先看：https://www.bilibili.com/video/BV1xUzRYTEBG （30min）
-# 再对着文档写：https://docs.pydantic.dev/latest/concepts/models/
+from pydantic import BaseModel, Field
+
+
+class SensorReading(BaseModel):
+    """一次传感器读数。外部上报的数据一律不可信，进业务逻辑前先校验。"""
+
+    device_id: str = Field(min_length=1)  # 空字符串直接拒
+    value: float  # 传 "68.5" 会被自动转成 68.5
+    unit: Literal["celsius", "bar", "rpm"]  # 只认这三种单位
+    ts: datetime
+
+
+class WorkOrder(BaseModel):
+    """一张设备巡检工单。"""
+
+    order_id: str
+    device_id: str
+    priority: Literal["low", "mid", "high"] = "mid"  # 不传默认 mid
+    status: Literal["open", "doing", "done"] = "open"

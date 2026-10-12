@@ -20,15 +20,29 @@ def chunked(seq: Iterable[T], size: int) -> Iterator[list[T]]:
     size <= 0 抛 ValueError。
     必须是惰性的：传入无限序列时也能取出第一批。
     """
-    # TODO(10-11 ③做)：删掉下面这行，换成你自己的实现
-    #   1. 先校验 size：if size <= 0: raise ValueError(...)
-    #   2. batch = [] ；for item in seq:  append → 满 size 就 yield batch 并清空
-    #   3. 循环结束 batch 里还有剩 → yield batch
-    #   看不懂先看：BV1U2WmzfEqp P98（迭代器 22min）→ P100（yield 5min）
-    raise NotImplementedError("TODO: 实现 chunked")
+    # ① 先挡掉非法 size：写了 yield 的函数，函数体要等第一次 next() 才跑，
+    #    但 list(chunked(...)) 会触发迭代，所以这里照样能抛出去。
+    if size <= 0:
+        raise ValueError(f"size must be positive, got {size}")
+
+    batch: list[T] = []
+    for item in seq:
+        batch.append(item)
+        # ② 攒满一批就 yield：函数在这里"暂停"，外面拿到这批数据
+        if len(batch) == size:
+            yield batch
+            # ③ 必须新建列表，不能 batch.clear()。
+            #    yield 交出去的是同一个对象的引用，clear 会把外面那份也清空。
+            batch = []
+    # ④ 收尾：最后一批不足 size 的别丢
+    if batch:
+        yield batch
 
 
 def take(seq: Iterable[T], n: int) -> Iterator[T]:
     """只取前 n 个元素就停，不读完整个序列（弹性题）。"""
-    # TODO(10-11 弹性)：for i, item in enumerate(seq): 到 n 就 break
-    raise NotImplementedError("TODO: 实现 take")
+    # 数到第 n 个就 break —— 不去读后面，所以无限序列也不会卡死
+    for i, item in enumerate(seq):
+        if i >= n:
+            break
+        yield item
